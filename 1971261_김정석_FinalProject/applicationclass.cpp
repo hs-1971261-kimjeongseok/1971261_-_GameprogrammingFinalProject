@@ -13,6 +13,7 @@ ApplicationClass::ApplicationClass()
     m_NormalMapShader = 0;
 	m_Light = 0; m_Light2 = 0;
 	m_RenderTexture = 0; m_RenderTexture2 = 0;
+    m_ChoosePanel[0] = 0; m_ChoosePanel[1] = 0; m_ChoosePanel[2] = 0;
 	m_TextureShader = 0;
 	m_DisplayPlane = 0;
 }
@@ -74,14 +75,11 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
-	
 
-    int rendertexturesize = 256;
-
-	// Create and initialize the render to texture object.
+	// Create and initialize the render to wtexture object.
 	m_RenderTexture = new RenderTextureClass;
 
-	result = m_RenderTexture->Initialize(m_Direct3D->GetDevice(), rendertexturesize, rendertexturesize, SCREEN_DEPTH, SCREEN_NEAR, 1);
+	result = m_RenderTexture->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
 	if (!result)
 	{
 		return false;
@@ -90,11 +88,38 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Create and initialize the render to texture object.
 	m_RenderTexture2 = new RenderTextureClass;
 
-	result = m_RenderTexture2->Initialize(m_Direct3D->GetDevice(), rendertexturesize, rendertexturesize, SCREEN_DEPTH, SCREEN_NEAR, 1);
+	result = m_RenderTexture2->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
 	if (!result)
 	{
 		return false;
 	}
+
+    // Create and initialize the render to texture object.
+    m_ChoosePanel[0] = new RenderTextureClass;
+
+    result = m_ChoosePanel[0]->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
+    if (!result)
+    {
+        return false;
+    }
+
+    // Create and initialize the render to texture object.
+    m_ChoosePanel[1] = new RenderTextureClass;
+
+    result = m_ChoosePanel[1]->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
+    if (!result)
+    {
+        return false;
+    }
+
+    // Create and initialize the render to texture object.
+    m_ChoosePanel[2] = new RenderTextureClass;
+
+    result = m_ChoosePanel[2]->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
+    if (!result)
+    {
+        return false;
+    }
 
 	m_TextureShader = new TextureShaderClass;
 
@@ -142,13 +167,37 @@ void ApplicationClass::Shutdown()
 		delete m_RenderTexture;
 		m_RenderTexture = 0;
 	}
-	// Release the render to texture object.
-	if (m_RenderTexture2)
-	{
-		m_RenderTexture2->Shutdown();
-		delete m_RenderTexture2;
-		m_RenderTexture2 = 0;
-	}
+    // Release the render to texture object.
+    if (m_RenderTexture2)
+    {
+        m_RenderTexture2->Shutdown();
+        delete m_RenderTexture2;
+        m_RenderTexture2 = 0;
+    }
+
+    // Release the render to texture object.
+    if (m_ChoosePanel[0])
+    {
+        m_ChoosePanel[0]->Shutdown();
+        delete m_ChoosePanel[0];
+        m_ChoosePanel[0] = 0;
+    }
+
+    // Release the render to texture object.
+    if (m_ChoosePanel[1])
+    {
+        m_ChoosePanel[1]->Shutdown();
+        delete m_ChoosePanel[1];
+        m_ChoosePanel[1] = 0;
+    }
+
+    // Release the render to texture object.
+    if (m_ChoosePanel[2])
+    {
+        m_ChoosePanel[2]->Shutdown();
+        delete m_ChoosePanel[2];
+        m_ChoosePanel[2] = 0;
+    }
 
 	if (m_PNTShader)
 	{
@@ -232,7 +281,7 @@ bool ApplicationClass::Frame(InputClass* Input)
 
 
 	// Render the scene to a render texture.
-	result = RenderSceneToTexture(rotation, m_RenderTexture, 1);
+	result = RenderSceneToTexture(rotation, m_RenderTexture, 1, 0.2f, 0.2f, 0.2f);
 	if (!result)
 	{
 		return false;
@@ -240,12 +289,20 @@ bool ApplicationClass::Frame(InputClass* Input)
 
 	// 두번째 도화지에 그림 그리기
 
-	result = RenderSceneToTexture(-rotation, m_RenderTexture2, 2);
+	result = RenderSceneToTexture(-rotation, m_RenderTexture2, 2, 0.2f, 0.2f, 0.2f);
 	if (!result)
 	{
 		return false;
 	}
 
+    // 선택지 3개를 각각 그리기
+    for (int i = 0; i < 3; i++) {
+        result = RenderSceneToTexture(0, m_ChoosePanel[i], 0, 0.2f, 0.2f, 0.2f);
+        if (!result)
+        {
+            return false;
+        }
+    }
 
 	// Render the final graphics scene.
 	result = Render(rotation);
@@ -256,16 +313,21 @@ bool ApplicationClass::Frame(InputClass* Input)
 	return true;
 }
 
-bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* m_RenderTexture, int idx)
+bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* m_RenderTexture, int idx, 
+    float red, float green, float blue)
 {
-    m_Light = new LightClass;
+
+    if (!m_Light)
+        m_Light = new LightClass;
+    if (!m_Light2)
+        m_Light2 = new LightClass;
 
     if(idx == 1){ m_Light->SetDiffuseColor(cosf(timeLeft),cosf(timeLeft),cosf(timeLeft), 1.0f); }
-    else{ m_Light->SetDiffuseColor(cosf(timeRight),cosf(timeRight),cosf(timeRight), 1.0f); }
+    else if(idx == 2){ m_Light->SetDiffuseColor(cosf(timeRight),cosf(timeRight),cosf(timeRight), 1.0f); }
+    else{ m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f); }
     m_Light->SetSpecularColor(1.0f, 0.0f, 0.0f, 1.0f);
     m_Light->SetDirection(-1.0f, -2.0f, 3.0f);
 
-    m_Light2 = new LightClass;
 
     m_Light2->SetDiffuseColor(0.3f, 0.2f, 0.3f, 1.0f);
     m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
@@ -277,7 +339,7 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
 	m_RenderTexture->SetRenderTarget(m_Direct3D->GetDeviceContext());
 
     // 배경색 설정
-	m_RenderTexture->ClearRenderTarget(m_Direct3D->GetDeviceContext(), 0.2f, 0.2f, 0.2f, 1.0f);
+	m_RenderTexture->ClearRenderTarget(m_Direct3D->GetDeviceContext(), red, blue, green, 1.0f);
 
 	// Set the position of the camera for viewing the cube.
 	m_Camera->SetPosition(0.0f, 0.0f, -12.0f);
@@ -368,6 +430,20 @@ bool ApplicationClass::Render(float rotation)
 	{
 		return false;
 	}
+
+    for (int i = 0; i < 3; i++) {
+        // Setup matrices - Top display plane.
+        worldMatrix = XMMatrixTranslation(-3.0f + (i * 3.0f), -2.0f, -2.0f);
+        // Render the display plane using the texture shader and the render texture resource.
+        m_DisplayPlane->Render(m_Direct3D->GetDeviceContext());
+
+        result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_DisplayPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_ChoosePanel[i]->GetShaderResourceView());
+        if (!result)
+        {
+            return false;
+        }
+    }
+    
 
 	m_Direct3D->EndScene();
 

@@ -45,7 +45,7 @@ public:
 
 private:
 	bool Render(float);
-	bool RenderSceneToTexture(float, RenderTextureClass*, int);
+	bool RenderSceneToTexture(float, RenderTextureClass*, int, float, float, float);
 
 private:
 	D3DClass* m_Direct3D;
@@ -56,6 +56,8 @@ private:
 	LightClass* m_Light; LightClass* m_Light2;
 	RenderTextureClass* m_RenderTexture;
 	RenderTextureClass* m_RenderTexture2;
+    RenderTextureClass* m_ChoosePanel[3];
+
 	TextureShaderClass* m_TextureShader;
 	DisplayPlaneClass* m_DisplayPlane;
 };
