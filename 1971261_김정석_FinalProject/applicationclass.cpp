@@ -192,16 +192,19 @@ void ApplicationClass::Shutdown()
 	return;
 }
 
+static float timeLeft = 0.0f;
+static float timeRight = 0.0f;
 
 bool ApplicationClass::Frame(InputClass* Input)
 {
 	static float rotation = 0.0f;
-    static float time = 0.0f;
+    
 	bool result;
 
 
-    time += 0.0174532925f * 0.25f;
-    if (time > 0.4f) { time = 0.0f; }
+    timeLeft += 0.0174532925f * 1.5f;
+    if (timeLeft > 360.0f) { timeLeft = 0.0f; }
+    timeRight = timeLeft - 180.0f;
 
 	// Check if the user pressed escape and wants to exit the application.
 	if (Input->IsEscapePressed())
@@ -225,20 +228,11 @@ bool ApplicationClass::Frame(InputClass* Input)
 		rotation += 360.0f;
 	}
 
-    m_Light = new LightClass;
-
-    m_Light->SetDiffuseColor(0.6f + time, 0.3f + time, 0.2f + time, 1.0f);
-    m_Light->SetSpecularColor(1.0f, 0.0f, 0.0f, 1.0f);
-    m_Light->SetDirection(-1.0f, -2.0f, 3.0f);
-
-    m_Light2 = new LightClass;
-
-    m_Light2->SetDiffuseColor(0.3f, 0.2f, 0.3f, 1.0f);
-    m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
+    
 
 
 	// Render the scene to a render texture.
-	result = RenderSceneToTexture(rotation, m_RenderTexture);
+	result = RenderSceneToTexture(rotation, m_RenderTexture, 1);
 	if (!result)
 	{
 		return false;
@@ -246,7 +240,7 @@ bool ApplicationClass::Frame(InputClass* Input)
 
 	// 두번째 도화지에 그림 그리기
 
-	result = RenderSceneToTexture(-rotation, m_RenderTexture2);
+	result = RenderSceneToTexture(-rotation, m_RenderTexture2, 2);
 	if (!result)
 	{
 		return false;
@@ -262,14 +256,28 @@ bool ApplicationClass::Frame(InputClass* Input)
 	return true;
 }
 
-bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* m_RenderTexture)
+bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* m_RenderTexture, int idx)
 {
+    m_Light = new LightClass;
+
+    if(idx == 1){ m_Light->SetDiffuseColor(cosf(timeLeft),cosf(timeLeft),cosf(timeLeft), 1.0f); }
+    else{ m_Light->SetDiffuseColor(cosf(timeRight),cosf(timeRight),cosf(timeRight), 1.0f); }
+    m_Light->SetSpecularColor(1.0f, 0.0f, 0.0f, 1.0f);
+    m_Light->SetDirection(-1.0f, -2.0f, 3.0f);
+
+    m_Light2 = new LightClass;
+
+    m_Light2->SetDiffuseColor(0.3f, 0.2f, 0.3f, 1.0f);
+    m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
+
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
 
 	// Set the render target to be the render texture and clear it.
 	m_RenderTexture->SetRenderTarget(m_Direct3D->GetDeviceContext());
-	m_RenderTexture->ClearRenderTarget(m_Direct3D->GetDeviceContext(), 0.0f, 0.5f, 1.0f, 1.0f);
+
+    // 배경색 설정
+	m_RenderTexture->ClearRenderTarget(m_Direct3D->GetDeviceContext(), 0.2f, 0.2f, 0.2f, 1.0f);
 
 	// Set the position of the camera for viewing the cube.
 	m_Camera->SetPosition(0.0f, 0.0f, -12.0f);

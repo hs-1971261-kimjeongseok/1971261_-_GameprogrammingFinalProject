@@ -45,7 +45,7 @@ public:
 
 private:
 	bool Render(float);
-	bool RenderSceneToTexture(float, RenderTextureClass*);
+	bool RenderSceneToTexture(float, RenderTextureClass*, int);
 
 private:
 	D3DClass* m_Direct3D;
