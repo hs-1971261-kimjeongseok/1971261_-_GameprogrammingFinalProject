@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX11_Chap5", "DX11_Chap5\DX11_Chap5.vcxproj", "{23FA543E-5B57-4371-9FEB-AE19E82661EA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1971261_김정석_FinalProject", "1971261_김정석_FinalProject\1971261_김정석_FinalProject.vcxproj", "{23FA543E-5B57-4371-9FEB-AE19E82661EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

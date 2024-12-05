@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{23fa543e-5b57-4371-9feb-ae19e82661ea}</ProjectGuid>
-    <RootNamespace>DX11Chap5</RootNamespace>
+    <RootNamespace>1971261_김정석_FinalProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

@@ -31,7 +31,7 @@ ApplicationClass::~ApplicationClass()
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
     char modelFilename[128]; WCHAR textureFilename1[128], textureFilename2[128];
-
+    //ㅅㄷㄴㅅㄴㅁㅁㄹ=테스트
 	//const WCHAR* textureFilename = L"lake.jpg";;
 	bool result;
 
@@ -219,11 +219,11 @@ bool ApplicationClass::Frame(InputClass* Input)
 
 	if (Input->IsLeftArrowPressed())
 	{
-		rotation -= 0.0174532925f * 0.5f;
+		rotation -= 0.0174532925f * 1.5f;
 	}
 	if (Input->IsRightArrowPressed())
 	{
-		rotation += 0.0174532925f * 0.5f;
+		rotation += 0.0174532925f * 1.5f;
 	}
 
 	// Update the rotation variable each frame.
