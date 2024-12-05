@@ -31,7 +31,7 @@ ApplicationClass::~ApplicationClass()
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
     char modelFilename[128]; WCHAR textureFilename1[128], textureFilename2[128];
-    //ㅅㄷㄴㅅㄴㅁㅁㄹ=테스트
+
 	//const WCHAR* textureFilename = L"lake.jpg";;
 	bool result;
 
@@ -74,22 +74,14 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
-	//m_Light = new LightClass;
+	
 
-	//m_Light->SetDiffuseColor(0.6f, 0.3f, 0.2f, 1.0f);
-	//m_Light->SetDirection(-1.0f, -2.0f, 3.0f);
-
-	//m_Light2 = new LightClass;
-
-	//m_Light2->SetDiffuseColor(0.3f, 0.2f, 0.3f, 1.0f);
-	//m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
-
-
+    int rendertexturesize = 256;
 
 	// Create and initialize the render to texture object.
 	m_RenderTexture = new RenderTextureClass;
 
-	result = m_RenderTexture->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
+	result = m_RenderTexture->Initialize(m_Direct3D->GetDevice(), rendertexturesize, rendertexturesize, SCREEN_DEPTH, SCREEN_NEAR, 1);
 	if (!result)
 	{
 		return false;
@@ -98,7 +90,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Create and initialize the render to texture object.
 	m_RenderTexture2 = new RenderTextureClass;
 
-	result = m_RenderTexture2->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
+	result = m_RenderTexture2->Initialize(m_Direct3D->GetDevice(), rendertexturesize, rendertexturesize, SCREEN_DEPTH, SCREEN_NEAR, 1);
 	if (!result)
 	{
 		return false;
@@ -337,16 +329,16 @@ bool ApplicationClass::Render(float rotation)
 	worldMatrix *= XMMatrixRotationRollPitchYaw(0.0f, -1.3f + rotation, 0.0f);
 
 	m_Model->Render(m_Direct3D->GetDeviceContext());
-    result = m_NormalMapShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+    /*result = m_NormalMapShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
         m_Model->GetTexture(0), m_Model->GetTexture(1), m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetSpecularColor(), m_Light2->GetDirection(), m_Light2->GetDiffuseColor());
 
     if (!result)
 	{
 		return false;
-	}
+	}*/
 
 	// Setup matrices - Top display plane.
-	worldMatrix = XMMatrixTranslation(-4.0f, 3.0f, 0.0f);
+	worldMatrix = XMMatrixTranslation(-1.12f, 0.55f, -6.0f);
 
 	// Render the display plane using the texture shader and the render texture resource.
 	m_DisplayPlane->Render(m_Direct3D->GetDeviceContext());
@@ -358,7 +350,7 @@ bool ApplicationClass::Render(float rotation)
 	}
 
 	// Setup matrices - Top display plane.
-	worldMatrix = XMMatrixTranslation(4.0f, 3.0f, 0.0f);
+	worldMatrix = XMMatrixTranslation(1.12f, 0.55f, -6.0f);
 
 	// Render the display plane using the texture shader and the render texture resource.
 	m_DisplayPlane->Render(m_Direct3D->GetDeviceContext());
