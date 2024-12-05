@@ -248,11 +248,13 @@ bool ApplicationClass::Frame(InputClass* Input)
 {
 	static float rotation = 0.0f;
     
-	bool result;
+    bool result;
 
-
+    //왼쪽 모델의 조명 세기 
     timeLeft += 0.0174532925f * 1.5f;
     if (timeLeft > 360.0f) { timeLeft = 0.0f; }
+
+    //오른쪽 모델의 조명 세기
     timeRight = timeLeft - 180.0f;
 
 	// Check if the user pressed escape and wants to exit the application.
@@ -281,7 +283,7 @@ bool ApplicationClass::Frame(InputClass* Input)
 
 
 	// Render the scene to a render texture.
-	result = RenderSceneToTexture(rotation, m_RenderTexture, 1, 0.2f, 0.2f, 0.2f);
+	result = RenderSceneToTexture(rotation, m_RenderTexture, 1, 0.0f, 0.0f, 0.0f);
 	if (!result)
 	{
 		return false;
@@ -289,7 +291,7 @@ bool ApplicationClass::Frame(InputClass* Input)
 
 	// 두번째 도화지에 그림 그리기
 
-	result = RenderSceneToTexture(-rotation, m_RenderTexture2, 2, 0.2f, 0.2f, 0.2f);
+	result = RenderSceneToTexture(-rotation, m_RenderTexture2, 2, 0.0f, 0.0f, 0.0f);
 	if (!result)
 	{
 		return false;
@@ -297,7 +299,11 @@ bool ApplicationClass::Frame(InputClass* Input)
 
     // 선택지 3개를 각각 그리기
     for (int i = 0; i < 3; i++) {
-        result = RenderSceneToTexture(0, m_ChoosePanel[i], 0, 0.2f, 0.2f, 0.2f);
+        float red = 0.0f; float green = 0.0f; float blue = 0.0f;
+        if (i == 0) { red = 0.2f; }
+        if (i == 1) { green = 0.2f; }
+        if (i == 2) { blue = 0.2f; }
+        result = RenderSceneToTexture(0, m_ChoosePanel[i], 0, red, blue, green);
         if (!result)
         {
             return false;
@@ -322,10 +328,16 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
     if (!m_Light2)
         m_Light2 = new LightClass;
 
-    if(idx == 1){ m_Light->SetDiffuseColor(cosf(timeLeft),cosf(timeLeft),cosf(timeLeft), 1.0f); }
-    else if(idx == 2){ m_Light->SetDiffuseColor(cosf(timeRight),cosf(timeRight),cosf(timeRight), 1.0f); }
-    else{ m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f); }
-    m_Light->SetSpecularColor(1.0f, 0.0f, 0.0f, 1.0f);
+    if(idx == 1){ 
+        m_Light->SetDiffuseColor(cosf(timeLeft) * 3,cosf(timeLeft) * 3,cosf(timeLeft) * 3, 1.0f); 
+    }
+    else if(idx == 2){ 
+        m_Light->SetDiffuseColor(cosf(timeRight) * 3,cosf(timeRight) * 3,cosf(timeRight) * 3, 1.0f);
+    }
+    else{
+        m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f); 
+    }
+    m_Light->SetSpecularColor(1.0f, 1.0f, 0.0f, 1.0f);
     m_Light->SetDirection(-1.0f, -2.0f, 3.0f);
 
 
