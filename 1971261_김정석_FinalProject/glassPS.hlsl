@@ -43,8 +43,8 @@ float4 GlassPixelShader(PixelInputType input) : SV_TARGET
 
 
     // Calculate the projected refraction texture coordinates.
-    refractTexCoord.x = input.refractionPosition.x / input.refractionPosition.w / 2.0f + 0.5f;
-    refractTexCoord.y = -input.refractionPosition.y / input.refractionPosition.w / 2.0f + 0.5f;
+    refractTexCoord.x = input.refractionPosition.x / input.refractionPosition.w / 2.1f + 0.4f;
+    refractTexCoord.y = -input.refractionPosition.y / input.refractionPosition.w / 2.1f + 0.7f;
 
     // Sample the normal from the normal map texture.
     normalMap = normalTexture.Sample(SampleType, input.tex);

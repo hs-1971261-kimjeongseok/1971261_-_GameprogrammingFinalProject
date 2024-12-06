@@ -397,12 +397,12 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
 
 	// Set the position of the camera for viewing the cube.
     if (idx == 1) { // 왼쪽 화면
-        m_Camera->SetPosition(0.0f, 12.0f, 0.0f);
+        m_Camera->SetPosition(2.5f, 16.0f, 0.0f);
         m_Camera->SetRotation(90.0f + cosf(timeLeft) * 15, 0.0f, 0.0f + cosf(timeLeft * 2) * 21);
         m_Camera->Render();
     }
     else if(idx == 2) { // 오른쪽 화면
-        m_Camera->SetPosition(0.0f, 0.0f, -12.0f);
+        m_Camera->SetPosition(0.0f, 0.0f, -16.0f);
         m_Camera->SetRotation(0.0f + cosf(timeRight * 2) * 7, 0.0f + cosf(timeRight) * 15, 0.0f);
         m_Camera->Render();
     }
@@ -450,8 +450,7 @@ bool ApplicationClass::Render(float rotation)
     bool result;
 
 
-    // Set the refraction scale for the glass shader.
-    refractionScale = 0.01f;
+    
 
 	
 	// Clear the buffers to begin the scene.
@@ -477,7 +476,8 @@ bool ApplicationClass::Render(float rotation)
 	// Setup matrices - Top display plane.
 	worldMatrix = XMMatrixTranslation(-1.12f, 0.55f, -6.0f);
 
-	
+    // Set the refraction scale for the glass shader.
+    refractionScale = 0.01f;
 
     m_WindowModel->Render(m_Direct3D->GetDeviceContext());
 
@@ -488,6 +488,9 @@ bool ApplicationClass::Render(float rotation)
         return false;
     }
 
+
+    // Set the refraction scale for the glass shader.
+    refractionScale = 0.1f;
 
 	// Setup matrices - Top display plane.
 	worldMatrix = XMMatrixTranslation(1.12f, 0.55f, -6.0f);
