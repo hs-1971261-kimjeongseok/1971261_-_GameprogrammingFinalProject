@@ -354,8 +354,22 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
 	m_RenderTexture->ClearRenderTarget(m_Direct3D->GetDeviceContext(), red, blue, green, 1.0f);
 
 	// Set the position of the camera for viewing the cube.
-	m_Camera->SetPosition(0.0f, 0.0f, -12.0f);
-	m_Camera->Render();
+    if (idx == 1) { // 왼쪽 화면
+        m_Camera->SetPosition(0.0f, 12.0f, 0.0f);
+        m_Camera->SetRotation(90.0f + cosf(timeLeft) * 15, 0.0f, 0.0f + cosf(timeLeft * 2) * 21);
+        m_Camera->Render();
+    }
+    else if(idx == 2) { // 오른쪽 화면
+        m_Camera->SetPosition(0.0f, 0.0f, -12.0f);
+        m_Camera->SetRotation(0.0f + cosf(timeRight * 2) * 7, 0.0f + cosf(timeRight) * 15, 0.0f);
+        m_Camera->Render();
+    }
+    else { // 선택지 3개
+        m_Camera->SetPosition(0.0f, 0.0f, -12.0f);
+        m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
+        m_Camera->Render();
+    }
+	
 
 	// Get the matrices.
 	m_Direct3D->GetWorldMatrix(worldMatrix);
@@ -398,6 +412,7 @@ bool ApplicationClass::Render(float rotation)
 
 	// Set the position of the camera for viewing the display planes with the render textures on them.
 	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+    m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
 	m_Camera->Render();
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
@@ -432,7 +447,6 @@ bool ApplicationClass::Render(float rotation)
 	}
 
 
-
 	// Setup matrices - Top display plane.
 	worldMatrix = XMMatrixTranslation(1.12f, 0.55f, -6.0f);
 
@@ -444,6 +458,7 @@ bool ApplicationClass::Render(float rotation)
 	{
 		return false;
 	}
+
 
     for (int i = 0; i < 3; i++) {
         // Setup matrices - Top display plane.
