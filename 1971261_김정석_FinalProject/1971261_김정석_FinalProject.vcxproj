@@ -216,11 +216,16 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\cube.txt" />
+    <Text Include="data\square.txt" />
     <Text Include="data\tmp.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="data\glass01.tga" />
+    <Image Include="data\ice01.tga" />
+    <Image Include="data\icebump01.tga" />
     <Image Include="data\normal01.jpg" />
     <Image Include="data\normal01.tga" />
+    <Image Include="data\normal03.tga" />
     <Image Include="data\stone01.jpg" />
     <Image Include="data\stone01.tga" />
   </ItemGroup>

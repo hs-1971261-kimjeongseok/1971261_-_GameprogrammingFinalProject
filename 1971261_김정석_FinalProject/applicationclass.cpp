@@ -329,10 +329,10 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
         m_Light2 = new LightClass;
 
     if(idx == 1){ 
-        m_Light->SetDiffuseColor(cosf(timeLeft) * 3,cosf(timeLeft) * 3,cosf(timeLeft) * 3, 1.0f); 
+        m_Light->SetDiffuseColor(cosf(timeLeft) * 5,cosf(timeLeft) * 5,cosf(timeLeft) * 5, 1.0f); 
     }
     else if(idx == 2){ 
-        m_Light->SetDiffuseColor(cosf(timeRight) * 3,cosf(timeRight) * 3,cosf(timeRight) * 3, 1.0f);
+        m_Light->SetDiffuseColor(cosf(timeRight) * 5,cosf(timeRight) * 5,cosf(timeRight) * 5, 1.0f);
     }
     else{
         m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f); 
@@ -430,6 +430,8 @@ bool ApplicationClass::Render(float rotation)
 	{
 		return false;
 	}
+
+
 
 	// Setup matrices - Top display plane.
 	worldMatrix = XMMatrixTranslation(1.12f, 0.55f, -6.0f);
