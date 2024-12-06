@@ -215,15 +215,15 @@ bool GlassModelClass::LoadTextures(ID3D11Device* device, ID3D11DeviceContext* de
 
 
 	// Create and initialize the texture objects.
-	m_Textures = new TextureClass[2];
+	m_Textures = new GlassTextureClass[2];
 
-	result = m_Textures[0].Initialize(device, deviceContext, (WCHAR*)textureFilename1);
+	result = m_Textures[0].Initialize(device, deviceContext, textureFilename1);
 	if(!result)
 	{
 		return false;
 	}
 
-	result = m_Textures[1].Initialize(device, deviceContext, (WCHAR*)textureFilename2);
+	result = m_Textures[1].Initialize(device, deviceContext, textureFilename2);
 	if(!result)
 	{
 		return false;

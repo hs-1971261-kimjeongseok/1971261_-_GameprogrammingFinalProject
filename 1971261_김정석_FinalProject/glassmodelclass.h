@@ -18,7 +18,7 @@ using namespace std;
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-#include "textureclass.h"
+#include "glasstextureclass.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ private:
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount;
-	TextureClass* m_Textures;
+	GlassTextureClass* m_Textures;
 	ModelType* m_model;
 };
 

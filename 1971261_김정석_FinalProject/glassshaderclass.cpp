@@ -36,6 +36,7 @@ bool GlassShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 	error = wcscpy_s(vsFilename, 128, L"glassVS.hlsl");
 	if(error != 0)
 	{
+        MessageBox(hwnd, L"Failed to initialize GlassShaderVS.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -43,6 +44,7 @@ bool GlassShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 	error = wcscpy_s(psFilename, 128, L"glassPS.hlsl");
 	if(error != 0)
 	{
+        MessageBox(hwnd, L"Failed to initialize GlassShaderPS.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -50,6 +52,7 @@ bool GlassShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 	result = InitializeShader(device, hwnd, vsFilename, psFilename);
 	if(!result)
 	{
+        MessageBox(hwnd, L"Failed to initialize Shader.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -71,6 +74,7 @@ bool GlassShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount
 							  ID3D11ShaderResourceView* refractionTexture, float refractionScale)
 {
 	bool result;
+
 
 
 	// Set the shader parameters that it will use for rendering.
@@ -148,6 +152,7 @@ bool GlassShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
     result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if(FAILED(result))
 	{
+        MessageBox(hwnd, L"Failed to Create GlassShaderVS.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -155,6 +160,7 @@ bool GlassShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
     result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if(FAILED(result))
 	{
+        MessageBox(hwnd, L"Failed to Create GlassShaderPS.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -183,6 +189,7 @@ bool GlassShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 									   vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if(FAILED(result))
 	{
+        MessageBox(hwnd, L"Failed to Create InputLayout.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -205,6 +212,7 @@ bool GlassShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if(FAILED(result))
 	{
+        MessageBox(hwnd, L"Failed to Create Buffer.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -227,6 +235,7 @@ bool GlassShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if(FAILED(result))
 	{
+        MessageBox(hwnd, L"Failed to Create SamplerState.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -242,6 +251,7 @@ bool GlassShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	result = device->CreateBuffer(&glassBufferDesc, NULL, &m_glassBuffer);
 	if(FAILED(result))
 	{
+        MessageBox(hwnd, L"Failed to Create Buffer2.", L"Error", MB_OK);
 		return false;
 	}
 

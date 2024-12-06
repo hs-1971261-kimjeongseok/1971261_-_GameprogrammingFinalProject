@@ -109,6 +109,16 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
+    // Create and initialize the glass shader object.
+    m_GlassShader = new GlassShaderClass;
+
+    result = m_GlassShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the glass shader object.", L"Error", MB_OK);
+        return false;
+    }
+
 
 	// Create and initialize the render to wtexture object.
 	m_RenderTexture = new RenderTextureClass;
@@ -119,14 +129,14 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create and initialize the render to texture object.
-	m_RenderTexture2 = new RenderTextureClass;
+    // Create and initialize the render to texture object.
+    m_RenderTexture2 = new RenderTextureClass;
 
-	result = m_RenderTexture2->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
-	if (!result)
-	{
-		return false;
-	}
+    result = m_RenderTexture2->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
+    if (!result)
+    {
+        return false;
+    }
 
     // Create and initialize the render to texture object.
     m_ChoosePanel[0] = new RenderTextureClass;
@@ -463,38 +473,33 @@ bool ApplicationClass::Render(float rotation)
 	worldMatrix *= XMMatrixRotationRollPitchYaw(0.0f, -1.3f + rotation, 0.0f);
 
 	m_Model->Render(m_Direct3D->GetDeviceContext());
-    /*result = m_NormalMapShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-        m_Model->GetTexture(0), m_Model->GetTexture(1), m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetSpecularColor(), m_Light2->GetDirection(), m_Light2->GetDiffuseColor());
-
-    if (!result)
-	{
-		return false;
-	}*/
 
 	// Setup matrices - Top display plane.
 	worldMatrix = XMMatrixTranslation(-1.12f, 0.55f, -6.0f);
 
-	// Render the display plane using the texture shader and the render texture resource.
-	m_DisplayPlane->Render(m_Direct3D->GetDeviceContext());
+	
 
-	result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_DisplayPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_RenderTexture->GetShaderResourceView());
-	if (!result)
-	{
-		return false;
-	}
+    m_WindowModel->Render(m_Direct3D->GetDeviceContext());
+
+    result = m_GlassShader->Render(m_Direct3D->GetDeviceContext(), m_WindowModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_WindowModel->GetTexture(0),
+        m_WindowModel->GetTexture(1), m_RenderTexture->GetShaderResourceView(), refractionScale);
+    if (!result)
+    {
+        return false;
+    }
 
 
 	// Setup matrices - Top display plane.
 	worldMatrix = XMMatrixTranslation(1.12f, 0.55f, -6.0f);
 
-	// Render the display plane using the texture shader and the render texture resource.
-	m_DisplayPlane->Render(m_Direct3D->GetDeviceContext());
+    m_WindowModel2->Render(m_Direct3D->GetDeviceContext());
 
-	result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_DisplayPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_RenderTexture2->GetShaderResourceView());
-	if (!result)
-	{
-		return false;
-	}
+    result = m_GlassShader->Render(m_Direct3D->GetDeviceContext(), m_WindowModel2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_WindowModel2->GetTexture(0),
+        m_WindowModel2->GetTexture(1), m_RenderTexture2->GetShaderResourceView(), refractionScale);
+    if (!result)
+    {
+        return false;
+    }
 
 
     for (int i = 0; i < 3; i++) {
