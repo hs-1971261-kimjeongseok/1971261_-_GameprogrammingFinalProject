@@ -9,8 +9,11 @@ ApplicationClass::ApplicationClass()
 	m_Direct3D = 0;
 	m_Camera = 0;
 	m_Model = 0;
-	m_PNTShader = 0;
     m_NormalMapShader = 0;
+
+    m_WindowModel = 0; m_WindowModel2 = 0;
+    m_GlassShader = 0;
+
 	m_Light = 0; m_Light2 = 0;
 	m_RenderTexture = 0; m_RenderTexture2 = 0;
     m_ChoosePanel[0] = 0; m_ChoosePanel[1] = 0; m_ChoosePanel[2] = 0;
@@ -31,13 +34,17 @@ ApplicationClass::~ApplicationClass()
 
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
-    char modelFilename[128]; WCHAR textureFilename1[128], textureFilename2[128];
+    char modelFilename[128], textureFilename1[128], textureFilename2[128];
 
 	//const WCHAR* textureFilename = L"lake.jpg";;
 	bool result;
 
 	// Create and initialize the Direct3D object.
 	m_Direct3D = new D3DClass;
+
+    m_Light = new LightClass;
+    m_Light2 = new LightClass;
+
 
 	result = m_Direct3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
 	if (!result)
@@ -63,6 +70,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     // Set the file name of the model.
     strcpy_s(modelFilename, "data/cube.txt");
 
+
     // Set the file name of the textures.
 
 
@@ -72,6 +80,32 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, (WCHAR*)L"data/stone01.jpg", (WCHAR*)L"data/normal01.jpg");
     if (!result)
     {
+        return false;
+    }
+
+    // Set the file name of the window model.
+    strcpy_s(modelFilename, "data/square.txt");
+
+    // Create and initialize the window model object.
+    m_WindowModel = new GlassModelClass;
+
+    result = m_WindowModel->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, (char*)"data/glass01.tga", (char*)"data/normal03.tga");
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the window model object.", L"Error", MB_OK);
+        return false;
+    }
+
+    strcpy_s(textureFilename1, "data/ice01.tga");
+    strcpy_s(textureFilename2, "data/icebump01.tga");
+
+    // Create and initialize the window model object.
+    m_WindowModel2 = new GlassModelClass;
+
+    result = m_WindowModel2->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, (char*)"data/ice01.tga", (char*)"data/icebump01.tga");
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the window model object.", L"Error", MB_OK);
         return false;
     }
 
@@ -175,36 +209,38 @@ void ApplicationClass::Shutdown()
         m_RenderTexture2 = 0;
     }
 
-    // Release the render to texture object.
-    if (m_ChoosePanel[0])
+    // Release the window model object.
+    if (m_WindowModel)
     {
-        m_ChoosePanel[0]->Shutdown();
-        delete m_ChoosePanel[0];
-        m_ChoosePanel[0] = 0;
+        m_WindowModel->Shutdown();
+        delete m_WindowModel;
+        m_WindowModel = 0;
     }
 
-    // Release the render to texture object.
-    if (m_ChoosePanel[1])
+    if (m_WindowModel2)
     {
-        m_ChoosePanel[1]->Shutdown();
-        delete m_ChoosePanel[1];
-        m_ChoosePanel[1] = 0;
+        m_WindowModel2->Shutdown();
+        delete m_WindowModel2;
+        m_WindowModel2 = 0;
     }
 
-    // Release the render to texture object.
-    if (m_ChoosePanel[2])
+    // Release the glass shader object.
+    if (m_GlassShader)
     {
-        m_ChoosePanel[2]->Shutdown();
-        delete m_ChoosePanel[2];
-        m_ChoosePanel[2] = 0;
+        m_GlassShader->Shutdown();
+        delete m_GlassShader;
+        m_GlassShader = 0;
     }
 
-	if (m_PNTShader)
-	{
-		m_PNTShader->Shutdown();
-		delete m_PNTShader;
-		m_PNTShader = 0;
-	}
+    for (int i = 0; i < 3; i++) {
+        // Release the render to texture object.
+        if (m_ChoosePanel[i])
+        {
+            m_ChoosePanel[i]->Shutdown();
+            delete m_ChoosePanel[i];
+            m_ChoosePanel[i] = 0;
+        }
+    }
 
 	// Release the model object.
 	if (m_Model)
@@ -323,11 +359,7 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
     float red, float green, float blue)
 {
 
-    if (!m_Light)
-        m_Light = new LightClass;
-    if (!m_Light2)
-        m_Light2 = new LightClass;
-
+    
     if(idx == 1){ 
         m_Light->SetDiffuseColor(cosf(timeLeft) * 5,cosf(timeLeft) * 5,cosf(timeLeft) * 5, 1.0f); 
     }
@@ -403,8 +435,13 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
 
 bool ApplicationClass::Render(float rotation)
 {
-	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-	bool result;
+    XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+    float refractionScale;
+    bool result;
+
+
+    // Set the refraction scale for the glass shader.
+    refractionScale = 0.01f;
 
 	
 	// Clear the buffers to begin the scene.

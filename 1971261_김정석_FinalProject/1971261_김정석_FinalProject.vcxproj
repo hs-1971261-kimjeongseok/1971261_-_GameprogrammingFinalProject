@@ -131,6 +131,7 @@
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="displayplaneclass.cpp" />
+    <ClCompile Include="glassmodelclass.cpp" />
     <ClCompile Include="glassshaderclass.cpp" />
     <ClCompile Include="inputclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="displayplaneclass.h" />
+    <ClInclude Include="glassmodelclass.h" />
     <ClInclude Include="glassshaderclass.h" />
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="lightclass.h" />

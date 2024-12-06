@@ -19,6 +19,8 @@
 #include "displayplaneclass.h"
 #include "normalmapshaderclass.h"
 #include "modelclass.h"
+#include "glassshaderclass.h"
+#include "glassmodelclass.h"
 
 /////////////
 // GLOBALS //
@@ -50,16 +52,22 @@ private:
 private:
 	D3DClass* m_Direct3D;
 	CameraClass* m_Camera;
-	PNTShaderClass* m_PNTShader;
+
     NormalMapShaderClass* m_NormalMapShader;
     ModelClass* m_Model;
 	LightClass* m_Light; LightClass* m_Light2;
+
+    GlassModelClass* m_WindowModel;
+    GlassModelClass* m_WindowModel2;
+    GlassShaderClass* m_GlassShader;
+
 	RenderTextureClass* m_RenderTexture;
 	RenderTextureClass* m_RenderTexture2;
     RenderTextureClass* m_ChoosePanel[3];
 
 	TextureShaderClass* m_TextureShader;
 	DisplayPlaneClass* m_DisplayPlane;
+
 };
 
 #endif
