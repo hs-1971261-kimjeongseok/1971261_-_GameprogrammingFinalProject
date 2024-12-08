@@ -49,7 +49,7 @@ public:
 	bool Frame(InputClass*);
 
 private:
-	bool Render(float);
+	bool Render(float, float);
 	bool RenderSceneToTexture(float, RenderTextureClass*, int, float, float, float, int);
 
 private:

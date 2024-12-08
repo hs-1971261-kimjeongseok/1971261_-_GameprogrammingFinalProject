@@ -435,8 +435,18 @@ bool ApplicationClass::Frame(InputClass* Input)
         }
     }
 
+    float refractionScale = 0.0f;
+    refractionScale -= 0.0174532925f * 5.5f;
+    // Update the rotation variable each frame.
+
+    if (refractionScale < 0.0f)
+    {
+        refractionScale += 360.0f;
+    }
+
+
 	// Render the final graphics scene.
-	result = Render(rotation);
+	result = Render(rotation, (sinf(refractionScale) + 1) / 50.0f);
 	if (!result)
 	{
 		return false;
@@ -528,10 +538,10 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
 	return true;
 }
 
-bool ApplicationClass::Render(float rotation)
+bool ApplicationClass::Render(float rotation, float refractionScale)
 {
     XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-    float refractionScale;
+
     bool result;
 
 
