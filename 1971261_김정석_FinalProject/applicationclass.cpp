@@ -309,15 +309,16 @@ bool ApplicationClass::Frame(InputClass* Input)
 		return false;
 	}
 
-	if (Input->IsLeftArrowPressed())
+	/*if (Input->IsLeftArrowPressed())
 	{
-		rotation -= 0.0174532925f * 1.5f;
+		
 	}
 	if (Input->IsRightArrowPressed())
 	{
 		rotation += 0.0174532925f * 1.5f;
-	}
+	}*/
 
+    rotation -= 0.0174532925f * 4.5f;
 	// Update the rotation variable each frame.
 	
 	if (rotation < 0.0f)
@@ -419,7 +420,13 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
 	m_RenderTexture->GetProjectionMatrix(projectionMatrix);
 
 	// Rotate the world matrix by the rotation value so that the cube will spin.
-	worldMatrix *= XMMatrixRotationRollPitchYaw(0.0f, -1.3f + rotation, 0.0f);
+    if (idx == 1) {
+        worldMatrix *= XMMatrixRotationRollPitchYaw(-1.3f + rotation, 0.0f, 0.0f);
+    }
+    else if (idx == 2) {
+        worldMatrix *= XMMatrixRotationRollPitchYaw(0.0f, -1.3f + rotation, 0.0f);
+    }
+	
 	// Render the model using the texture shader.
 	m_Model->Render(m_Direct3D->GetDeviceContext());
 
