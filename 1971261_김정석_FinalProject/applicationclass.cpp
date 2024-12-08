@@ -80,7 +80,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     // 선택지로 사용될 보기들의 경로를 할당
     chooseMap[1] = (WCHAR*)L"data/stone01.jpg"; // 아무 문양도 없는 보기
     for (int i = 2; i <= 6; i++) {
-        std::wstring path = L"data/choose/choose" + std::to_wstring(i) + L".jpg";
+        std::wstring path = L"data/choose/choose" + std::to_wstring(i - 1) + L".jpg";
         chooseMap[i] = _wcsdup(path.c_str());
     }
 
@@ -345,7 +345,7 @@ bool ApplicationClass::Frame(InputClass* Input)
             MessageBox(hwnd, message.c_str(), L"Error", MB_OK);
         }
         else {
-            MessageBox(hwnd, L"Correct!!", L"Error", MB_OK);
+            MessageBox(hwnd, L"Correct!!", L"Information", MB_OK);
         }
         return false;
     }
@@ -359,7 +359,7 @@ bool ApplicationClass::Frame(InputClass* Input)
             MessageBox(hwnd, message.c_str(), L"Error", MB_OK);
         }
         else {
-            MessageBox(hwnd, L"Correct!!", L"Error", MB_OK);
+            MessageBox(hwnd, L"Correct!!", L"Information", MB_OK);
         }
         return false;
     }
@@ -373,7 +373,7 @@ bool ApplicationClass::Frame(InputClass* Input)
             MessageBox(hwnd, message.c_str(), L"Error", MB_OK);
         }
         else {
-            MessageBox(hwnd, L"Correct!!", L"Error", MB_OK);
+            MessageBox(hwnd, L"Correct!!", L"Information", MB_OK);
         }
         return false;
     }
@@ -425,7 +425,8 @@ bool ApplicationClass::Frame(InputClass* Input)
             result = RenderSceneToTexture(0, m_ChoosePanel[i], 0, red, blue, green, 0);
         }
         else {
-            result = RenderSceneToTexture(0, m_ChoosePanel[i], 0, red, blue, green, answerused++);
+            result = RenderSceneToTexture(0, m_ChoosePanel[i], 0, red, blue, green, answerused);
+            answerused++;
         }
         
         if (!result)
