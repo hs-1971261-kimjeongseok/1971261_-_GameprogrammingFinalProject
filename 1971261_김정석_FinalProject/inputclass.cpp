@@ -255,6 +255,38 @@ bool InputClass::IsRightArrowPressed()
 	return false;
 }
 
+bool InputClass::IsNumOnePressed()
+{
+    if (m_keyboardState[DIK_1] & 0x80)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+bool InputClass::IsNumTwoPressed()
+{
+    if (m_keyboardState[DIK_2] & 0x80)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+bool InputClass::IsNumThreePressed()
+{
+    if (m_keyboardState[DIK_3] & 0x80)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 {

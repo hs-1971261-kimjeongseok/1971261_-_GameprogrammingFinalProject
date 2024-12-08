@@ -21,6 +21,7 @@
 #include "modelclass.h"
 #include "glassshaderclass.h"
 #include "glassmodelclass.h"
+#include <unordered_map>
 
 /////////////
 // GLOBALS //
@@ -50,6 +51,10 @@ private:
 	bool RenderSceneToTexture(float, RenderTextureClass*, int, float, float, float);
 
 private:
+    int answer;
+
+    HWND hwnd;
+
 	D3DClass* m_Direct3D;
 	CameraClass* m_Camera;
 

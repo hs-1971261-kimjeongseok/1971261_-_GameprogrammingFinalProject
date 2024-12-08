@@ -41,6 +41,9 @@ public:
 	bool IsEscapePressed();
 	bool IsLeftArrowPressed();
 	bool IsRightArrowPressed();
+    bool IsNumOnePressed();
+    bool IsNumTwoPressed();
+    bool IsNumThreePressed();
 
 	void GetMouseLocation(int&, int&);
 	bool IsMousePressed();

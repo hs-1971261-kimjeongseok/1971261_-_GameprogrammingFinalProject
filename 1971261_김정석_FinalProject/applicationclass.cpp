@@ -4,8 +4,11 @@
 #include "applicationclass.h"
 
 
+
 ApplicationClass::ApplicationClass()
 {
+    answer = 0;
+
 	m_Direct3D = 0;
 	m_Camera = 0;
 	m_Model = 0;
@@ -34,6 +37,10 @@ ApplicationClass::~ApplicationClass()
 
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
+    unordered_map<int, string> chooseMap;
+
+    this->hwnd = hwnd;
+
     char modelFilename[128], textureFilename1[128], textureFilename2[128];
 
 	//const WCHAR* textureFilename = L"lake.jpg";;
@@ -308,6 +315,39 @@ bool ApplicationClass::Frame(InputClass* Input)
 	{
 		return false;
 	}
+
+
+    if (Input->IsNumOnePressed())
+    {
+        std::wstring message = L"Wrong. Answer is " + std::to_wstring(answer);
+        //bool res = choose(1);
+        //if (!res) {
+            MessageBox(hwnd, message.c_str(), L"Error", MB_OK);
+        //}
+        return false;
+    }
+
+
+    if (Input->IsNumTwoPressed())
+    {
+        std::wstring message = L"Wrong. Answer is " + std::to_wstring(answer);
+        //bool res = choose(2);
+        //if (!res) {
+            MessageBox(hwnd, message.c_str(), L"Error", MB_OK);
+        //}
+        return false;
+    }
+
+
+    if (Input->IsNumThreePressed())
+    {
+        std::wstring message = L"Wrong. Answer is " + std::to_wstring(answer);
+        //bool res = choose(3);
+        //if (!res) {
+            MessageBox(hwnd, message.c_str(), L"Error", MB_OK);
+        //}
+        return false;
+    }
 
 	/*if (Input->IsLeftArrowPressed())
 	{
