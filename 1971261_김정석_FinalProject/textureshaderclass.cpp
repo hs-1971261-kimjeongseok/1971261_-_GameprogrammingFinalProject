@@ -31,7 +31,7 @@ bool TextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 	wchar_t psFilename[128];
 	int error;
 
-
+    //Å×½ºÆ®
 	// Set the filename of the vertex shader.
 	error = wcscpy_s(vsFilename, 128, L"textureVertex.hlsl");
 	if(error != 0)

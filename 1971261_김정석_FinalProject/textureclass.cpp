@@ -16,7 +16,7 @@ TextureClass::~TextureClass() {
 #include "WICTextureLoader.h"
 bool TextureClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, WCHAR* filename)
 {
-
+    // jpg¸¦ ºÒ·¯¿È
     DirectX::CreateWICTextureFromFile(device, filename, NULL, &m_textureView);
 
     return true;

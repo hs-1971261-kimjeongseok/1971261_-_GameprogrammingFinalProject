@@ -254,6 +254,11 @@
     <Text Include="data\tmp.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="data\choose\choose1.jpg" />
+    <Image Include="data\choose\choose2.jpg" />
+    <Image Include="data\choose\choose3.jpg" />
+    <Image Include="data\choose\choose4.jpg" />
+    <Image Include="data\choose\choose5.jpg" />
     <Image Include="data\glass01.tga" />
     <Image Include="data\ice01.tga" />
     <Image Include="data\icebump01.tga" />
