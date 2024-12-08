@@ -50,10 +50,12 @@ public:
 
 private:
 	bool Render(float);
-	bool RenderSceneToTexture(float, RenderTextureClass*, int, float, float, float);
+	bool RenderSceneToTexture(float, RenderTextureClass*, int, float, float, float, int);
 
 private:
-    int answer;
+    int answer; int used[3];
+    char modelFilename[128];
+    map<int, WCHAR*> chooseMap;
 
     HWND hwnd;
 
@@ -61,7 +63,7 @@ private:
 	CameraClass* m_Camera;
 
     NormalMapShaderClass* m_NormalMapShader;
-    ModelClass* m_Model;
+    ModelClass* m_Model[3];
 	LightClass* m_Light; LightClass* m_Light2;
 
     GlassModelClass* m_WindowModel;

@@ -9,10 +9,9 @@
 ApplicationClass::ApplicationClass()
 {
     answer = 0;
-
 	m_Direct3D = 0;
 	m_Camera = 0;
-	m_Model = 0;
+	m_Model[0] = 0; m_Model[1] = 0; m_Model[2] = 0;
     m_NormalMapShader = 0;
 
     m_WindowModel = 0; m_WindowModel2 = 0;
@@ -38,34 +37,14 @@ ApplicationClass::~ApplicationClass()
 
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
-    
-    // 선택지로 사용될 보기들의 경로를 할당
-    map<int, WCHAR*> chooseMap;
-
-    chooseMap[1] = (WCHAR*)L"data/stone01.jpg"; // 아무 문양도 없는 보기
-    for (int i = 2; i <= 6; i++) {
-        std::wstring path = L"data/choose/choose" + std::to_wstring(i) + L".jpg";
-        chooseMap[i] = _wcsdup(path.c_str());
-    }
-    
-
-    // 사용될 3개의 보기를 정함(중복되지 않게)
-    int used[3];
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
-    used[0] = rand() % 7;
-    used[1] = rand() % 7;
-    while(used[1] == used[0]){ used[1] = rand() % 7; }
-    used[2] = rand() % 7;
-    while(used[2] == used[0] || used[2] == used[1]){ used[2] = rand() % 7; }
-
-
+    bool result;
 
     this->hwnd = hwnd;
 
-    char modelFilename[128], textureFilename1[128], textureFilename2[128];
+    char textureFilename1[128], textureFilename2[128];
 
 	//const WCHAR* textureFilename = L"lake.jpg";;
-	bool result;
+	
 
 	// Create and initialize the Direct3D object.
 	m_Direct3D = new D3DClass;
@@ -98,18 +77,34 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     // Set the file name of the model.
     strcpy_s(modelFilename, "data/cube.txt");
 
-
-    // Set the file name of the textures.
-
-
-    // Create and initialize the model object.
-    m_Model = new ModelClass;
-
-    result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, chooseMap[used[0]], (WCHAR*)L"data/normal01.jpg");
-    if (!result)
-    {
-        return false;
+    // 선택지로 사용될 보기들의 경로를 할당
+    chooseMap[1] = (WCHAR*)L"data/stone01.jpg"; // 아무 문양도 없는 보기
+    for (int i = 2; i <= 6; i++) {
+        std::wstring path = L"data/choose/choose" + std::to_wstring(i) + L".jpg";
+        chooseMap[i] = _wcsdup(path.c_str());
     }
+
+
+
+    // 사용될 3개의 보기를 정함(중복되지 않게)
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    used[0] = rand() % 6 + 1;
+    used[1] = rand() % 6 + 1;
+    while (used[1] == used[0]) { used[1] = rand() % 6 + 1; }
+    used[2] = rand() % 6 + 1;
+    while (used[2] == used[0] || used[2] == used[1]) { used[2] = rand() % 6 + 1; }
+
+    // 보기에 사용될 3개의 모델을 각각 할당
+    for (int i = 0; i < 3; i++) {
+        m_Model[i] = new ModelClass;
+        result = m_Model[i]->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename,
+            chooseMap[used[i]], (WCHAR*)L"data/normal01.jpg");
+        if (!result) {
+            return false;
+        }
+    }
+
+    answer = rand() % 4; // 정답 결정
 
     // Set the file name of the window model.
     strcpy_s(modelFilename, "data/square.txt");
@@ -278,15 +273,17 @@ void ApplicationClass::Shutdown()
             delete m_ChoosePanel[i];
             m_ChoosePanel[i] = 0;
         }
+
+        // Release the model object.
+        if (m_Model[i])
+        {
+            m_Model[i]->Shutdown();
+            delete m_Model[i];
+            m_Model[i] = 0;
+        }
     }
 
-	// Release the model object.
-	if (m_Model)
-	{
-		m_Model->Shutdown();
-		delete m_Model;
-		m_Model = 0;
-	}
+	
 
 	// Release the camera object.
 	if (m_Camera)
@@ -315,6 +312,8 @@ void ApplicationClass::Shutdown()
 	return;
 }
 
+bool choose(int input, int answer) { return answer == input; }
+
 static float timeLeft = 0.0f;
 static float timeRight = 0.0f;
 
@@ -341,10 +340,13 @@ bool ApplicationClass::Frame(InputClass* Input)
     if (Input->IsNumOnePressed())
     {
         std::wstring message = L"Wrong. Answer is " + std::to_wstring(answer);
-        //bool res = choose(1);
-        //if (!res) {
+        bool res = choose(1, answer);
+        if (!res) {
             MessageBox(hwnd, message.c_str(), L"Error", MB_OK);
-        //}
+        }
+        else {
+            MessageBox(hwnd, L"Correct!!", L"Error", MB_OK);
+        }
         return false;
     }
 
@@ -352,10 +354,13 @@ bool ApplicationClass::Frame(InputClass* Input)
     if (Input->IsNumTwoPressed())
     {
         std::wstring message = L"Wrong. Answer is " + std::to_wstring(answer);
-        //bool res = choose(2);
-        //if (!res) {
+        bool res = choose(2, answer);
+        if (!res) {
             MessageBox(hwnd, message.c_str(), L"Error", MB_OK);
-        //}
+        }
+        else {
+            MessageBox(hwnd, L"Correct!!", L"Error", MB_OK);
+        }
         return false;
     }
 
@@ -363,10 +368,13 @@ bool ApplicationClass::Frame(InputClass* Input)
     if (Input->IsNumThreePressed())
     {
         std::wstring message = L"Wrong. Answer is " + std::to_wstring(answer);
-        //bool res = choose(3);
-        //if (!res) {
+        bool res = choose(3, answer);
+        if (!res) {
             MessageBox(hwnd, message.c_str(), L"Error", MB_OK);
-        //}
+        }
+        else {
+            MessageBox(hwnd, L"Correct!!", L"Error", MB_OK);
+        }
         return false;
     }
 
@@ -391,7 +399,7 @@ bool ApplicationClass::Frame(InputClass* Input)
 
 
 	// Render the scene to a render texture.
-	result = RenderSceneToTexture(rotation, m_RenderTexture, 1, 0.0f, 0.0f, 0.0f);
+	result = RenderSceneToTexture(rotation, m_RenderTexture, 1, 0.0f, 0.0f, 0.0f, 0);
 	if (!result)
 	{
 		return false;
@@ -399,19 +407,27 @@ bool ApplicationClass::Frame(InputClass* Input)
 
 	// 두번째 도화지에 그림 그리기
 
-	result = RenderSceneToTexture(-rotation, m_RenderTexture2, 2, 0.0f, 0.0f, 0.0f);
+	result = RenderSceneToTexture(-rotation, m_RenderTexture2, 2, 0.0f, 0.0f, 0.0f, 0);
 	if (!result)
 	{
 		return false;
 	}
 
+    int answerused = 1;
     // 선택지 3개를 각각 그리기
     for (int i = 0; i < 3; i++) {
         float red = 0.0f; float green = 0.0f; float blue = 0.0f;
         if (i == 0) { red = 0.2f; }
         if (i == 1) { green = 0.2f; }
         if (i == 2) { blue = 0.2f; }
-        result = RenderSceneToTexture(0, m_ChoosePanel[i], 0, red, blue, green);
+
+        if (i == answer - 1) {// 정답 번호 판넬이라면 위 2개와 같은 문양
+            result = RenderSceneToTexture(0, m_ChoosePanel[i], 0, red, blue, green, 0);
+        }
+        else {
+            result = RenderSceneToTexture(0, m_ChoosePanel[i], 0, red, blue, green, answerused++);
+        }
+        
         if (!result)
         {
             return false;
@@ -428,7 +444,7 @@ bool ApplicationClass::Frame(InputClass* Input)
 }
 
 bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* m_RenderTexture, int idx, 
-    float red, float green, float blue)
+    float red, float green, float blue, int modelnum)
 {
 
     
@@ -489,13 +505,13 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
     }
 	
 	// Render the model using the texture shader.
-	m_Model->Render(m_Direct3D->GetDeviceContext());
+	m_Model[modelnum]->Render(m_Direct3D->GetDeviceContext());
 
 
    
 
-    result = m_NormalMapShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-        m_Model->GetTexture(0), m_Model->GetTexture(1), m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetSpecularColor(), m_Light2->GetDirection(), m_Light2->GetDiffuseColor());
+    result = m_NormalMapShader->Render(m_Direct3D->GetDeviceContext(), m_Model[modelnum]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+        m_Model[modelnum]->GetTexture(0), m_Model[modelnum]->GetTexture(1), m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetSpecularColor(), m_Light2->GetDirection(), m_Light2->GetDiffuseColor());
 
 	if (!result)
 	{
@@ -539,7 +555,7 @@ bool ApplicationClass::Render(float rotation)
 	// Rotate the world matrix by the rotation value so that the cube will spin.
 	worldMatrix *= XMMatrixRotationRollPitchYaw(0.0f, -1.3f + rotation, 0.0f);
 
-	m_Model->Render(m_Direct3D->GetDeviceContext());
+	m_Model[0]->Render(m_Direct3D->GetDeviceContext());
 
 	// Setup matrices - Top display plane.
 	worldMatrix = XMMatrixTranslation(-1.12f, 0.55f, -6.0f);
