@@ -38,14 +38,9 @@ ApplicationClass::~ApplicationClass()
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
     bool result;
-
     this->hwnd = hwnd;
 
     char textureFilename1[128], textureFilename2[128];
-
-	//const WCHAR* textureFilename = L"lake.jpg";;
-	
-
 	// Create and initialize the Direct3D object.
 	m_Direct3D = new D3DClass;
 
@@ -411,8 +406,14 @@ bool ApplicationClass::Frame(InputClass* Input)
 		rotation += 360.0f;
 	}
 
-    
+    float refractionScale = 0.0f;
+    refractionScale -= 0.0174532925f * 5.5f;
+    // Update the rotation variable each frame.
 
+    if (refractionScale < 0.0f)
+    {
+        refractionScale += 360.0f;
+    }
 
 	// Render the scene to a render texture.
 	result = RenderSceneToTexture(rotation, m_RenderTexture, 1, 0.0f, 0.0f, 0.0f, 0);
@@ -451,17 +452,9 @@ bool ApplicationClass::Frame(InputClass* Input)
         }
     }
 
-    float refractionScale = 0.0f;
-    refractionScale -= 0.0174532925f * 5.5f;
-    // Update the rotation variable each frame.
-
-    if (refractionScale < 0.0f)
-    {
-        refractionScale += 360.0f;
-    }
-
-
 	// Render the final graphics scene.
+
+    //refractionscale은 0 ~ 0.05
 	result = Render(rotation, (sinf(refractionScale) + 1) / 40.0f);
 	if (!result)
 	{
@@ -474,14 +467,14 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
     float red, float green, float blue, int modelnum)
 {
 
-    
+    //화면마다 조명을 다르게 설정한다.
     if(idx == 1){ 
-        m_Light->SetDiffuseColor(cosf(timeLeft * 5) / 6,cosf(timeLeft * 5) / 5,cosf(timeLeft * 5) / 4, 1.0f);
+        m_Light->SetDiffuseColor(cosf(timeLeft * 5) * 6,cosf(timeLeft * 5) * 5,cosf(timeLeft * 5) * 4, 1.0f);
         m_Light2->SetDiffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
         m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
     }
     else if(idx == 2){ 
-        m_Light->SetDiffuseColor(cosf(timeRight * 5) / 5,cosf(timeRight * 5) / 4,cosf(timeRight * 5) / 6, 1.0f);
+        m_Light->SetDiffuseColor(cosf(timeRight * 5) * 5,cosf(timeRight * 5) * 4,cosf(timeRight * 5) * 6, 1.0f);
         m_Light2->SetDiffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
         m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
     }
@@ -505,7 +498,7 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
     // 배경색 설정
 	m_RenderTexture->ClearRenderTarget(m_Direct3D->GetDeviceContext(), red, blue, green, 1.0f);
 
-	// Set the position of the camera for viewing the cube.
+	// 화면마다 카메라 위치를 다르게 한다.
     if (idx == 1) { // 왼쪽 화면
         m_Camera->SetPosition(2.5f, 16.0f, 0.0f);
         m_Camera->SetRotation(90.0f + cosf(timeLeft) * 15, 0.0f, 0.0f + cosf(timeLeft * 2) * 21);
@@ -541,7 +534,7 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
 
 
    
-
+    // 입력받은 숫자에 맞는 모델을 렌더링한다.
     result = m_NormalMapShader->Render(m_Direct3D->GetDeviceContext(), m_Model[modelnum]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
         m_Model[modelnum]->GetTexture(0), m_Model[modelnum]->GetTexture(1), m_Light->GetDirection(), m_Light->GetDiffuseColor(), 
         m_Light->GetSpecularColor(), m_Light2->GetDirection(), m_Light2->GetDiffuseColor());
@@ -565,10 +558,6 @@ bool ApplicationClass::Render(float rotation, float refractionScale)
     XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 
     bool result;
-
-
-    
-
 	
 	// Clear the buffers to begin the scene.
 	m_Direct3D->BeginScene(0.6f, 0.6f, 0.6f, 1.0f);
@@ -593,9 +582,6 @@ bool ApplicationClass::Render(float rotation, float refractionScale)
 	// Setup matrices - Top display plane.
 	worldMatrix = XMMatrixTranslation(-1.12f, 0.55f, -6.0f);
 
-    // Set the refraction scale for the glass shader.
-    refractionScale = 0.01f;
-
     m_WindowModel->Render(m_Direct3D->GetDeviceContext());
 
     result = m_GlassShader->Render(m_Direct3D->GetDeviceContext(), m_WindowModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_WindowModel->GetTexture(0),
@@ -607,7 +593,7 @@ bool ApplicationClass::Render(float rotation, float refractionScale)
 
 
     // Set the refraction scale for the glass shader.
-    refractionScale = 0.1f;
+    //refractionScale = 0.1f;
 
 	// Setup matrices - Top display plane.
 	worldMatrix = XMMatrixTranslation(1.12f, 0.55f, -6.0f);
@@ -628,7 +614,8 @@ bool ApplicationClass::Render(float rotation, float refractionScale)
         // Render the display plane using the texture shader and the render texture resource.
         m_DisplayPlane->Render(m_Direct3D->GetDeviceContext());
 
-        result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_DisplayPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_ChoosePanel[i]->GetShaderResourceView());
+        result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_DisplayPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
+            m_ChoosePanel[i]->GetShaderResourceView());
         if (!result)
         {
             return false;

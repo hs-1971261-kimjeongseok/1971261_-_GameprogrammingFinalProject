@@ -53,9 +53,10 @@ private:
 	bool RenderSceneToTexture(float, RenderTextureClass*, int, float, float, float, int);
 
 private:
-    int answer; int used[3];
+    int answer; // 정답 보기의 번호
+    int used[3]; // 이번 문제에 사용될 보기 3개
     char modelFilename[128];
-    map<int, WCHAR*> chooseMap;
+    map<int, WCHAR*> chooseMap; // 번호에 대응되는 jpg 파일 경로를 저장
 
     HWND hwnd;
 
@@ -63,13 +64,15 @@ private:
 	CameraClass* m_Camera;
 
     NormalMapShaderClass* m_NormalMapShader;
-    ModelClass* m_Model[3];
-	LightClass* m_Light; LightClass* m_Light2;
+    ModelClass* m_Model[3]; // 3개의 보기를 담을 3개의 모델
+	LightClass* m_Light; LightClass* m_Light2; // 조명
 
-    GlassModelClass* m_WindowModel;
+    // 화면을 가릴 유리
+    GlassModelClass* m_WindowModel; 
     GlassModelClass* m_WindowModel2;
     GlassShaderClass* m_GlassShader;
 
+    // 표시될 5개의 화면들
 	RenderTextureClass* m_RenderTexture;
 	RenderTextureClass* m_RenderTexture2;
     RenderTextureClass* m_ChoosePanel[3];
