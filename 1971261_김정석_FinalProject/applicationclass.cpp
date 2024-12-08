@@ -2,6 +2,7 @@
 // Filename: applicationclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "applicationclass.h"
+#include <random>
 
 
 
@@ -37,7 +38,27 @@ ApplicationClass::~ApplicationClass()
 
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
-    unordered_map<int, string> chooseMap;
+    
+    // 선택지로 사용될 보기들의 경로를 할당
+    map<int, WCHAR*> chooseMap;
+
+    chooseMap[1] = (WCHAR*)L"data/stone01.jpg"; // 아무 문양도 없는 보기
+    for (int i = 2; i <= 6; i++) {
+        std::wstring path = L"data/choose/choose" + std::to_wstring(i) + L".jpg";
+        chooseMap[i] = _wcsdup(path.c_str());
+    }
+    
+
+    // 사용될 3개의 보기를 정함(중복되지 않게)
+    int used[3];
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    used[0] = rand() % 7;
+    used[1] = rand() % 7;
+    while(used[1] == used[0]){ used[1] = rand() % 7; }
+    used[2] = rand() % 7;
+    while(used[2] == used[0] || used[2] == used[1]){ used[2] = rand() % 7; }
+
+
 
     this->hwnd = hwnd;
 
@@ -84,7 +105,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     // Create and initialize the model object.
     m_Model = new ModelClass;
 
-    result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, (WCHAR*)L"data/stone01.jpg", (WCHAR*)L"data/normal01.jpg");
+    result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, chooseMap[used[0]], (WCHAR*)L"data/normal01.jpg");
     if (!result)
     {
         return false;
