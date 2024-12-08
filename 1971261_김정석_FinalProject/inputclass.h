@@ -44,6 +44,7 @@ public:
     bool IsNumOnePressed();
     bool IsNumTwoPressed();
     bool IsNumThreePressed();
+    bool IsSpacebarPressed();
 
 	void GetMouseLocation(int&, int&);
 	bool IsMousePressed();

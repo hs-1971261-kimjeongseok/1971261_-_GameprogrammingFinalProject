@@ -257,6 +257,13 @@ void ApplicationClass::Shutdown()
         m_WindowModel2 = 0;
     }
 
+    if (m_NormalMapShader)
+    {
+        m_NormalMapShader->Shutdown();
+        delete m_NormalMapShader;
+        m_NormalMapShader = 0;
+    }
+
     // Release the glass shader object.
     if (m_GlassShader)
     {
@@ -316,7 +323,8 @@ bool choose(int input, int answer) { return answer == input; }
 
 static float timeLeft = 0.0f;
 static float timeRight = 0.0f;
-
+static float stop = 0.0f;
+static bool usedStop = false;
 bool ApplicationClass::Frame(InputClass* Input)
 {
 	static float rotation = 0.0f;
@@ -378,16 +386,24 @@ bool ApplicationClass::Frame(InputClass* Input)
         return false;
     }
 
-	/*if (Input->IsLeftArrowPressed())
-	{
-		
-	}
-	if (Input->IsRightArrowPressed())
-	{
-		rotation += 0.0174532925f * 1.5f;
-	}*/
+    
+    
 
-    rotation -= 0.0174532925f * 4.5f;
+    if (Input->IsSpacebarPressed() && !usedStop) {
+        usedStop = true;
+    }
+	
+    if (usedStop) {
+        if (stop < 10.0f) {
+            stop += 0.0174532925f * 4.5f;
+        }
+        else {
+            rotation -= 0.0174532925f * 4.5f;
+        }
+    }
+    else {
+        rotation -= 0.0174532925f * 4.5f;
+    }
 	// Update the rotation variable each frame.
 	
 	if (rotation < 0.0f)
@@ -446,7 +462,7 @@ bool ApplicationClass::Frame(InputClass* Input)
 
 
 	// Render the final graphics scene.
-	result = Render(rotation, (sinf(refractionScale) + 1) / 50.0f);
+	result = Render(rotation, (sinf(refractionScale) + 1) / 40.0f);
 	if (!result)
 	{
 		return false;
@@ -460,20 +476,25 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
 
     
     if(idx == 1){ 
-        m_Light->SetDiffuseColor(cosf(timeLeft) * 5,cosf(timeLeft) * 5,cosf(timeLeft) * 5, 1.0f); 
+        m_Light->SetDiffuseColor(cosf(timeLeft * 5) / 6,cosf(timeLeft * 5) / 5,cosf(timeLeft * 5) / 4, 1.0f);
+        m_Light2->SetDiffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
+        m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
     }
     else if(idx == 2){ 
-        m_Light->SetDiffuseColor(cosf(timeRight) * 5,cosf(timeRight) * 5,cosf(timeRight) * 5, 1.0f);
+        m_Light->SetDiffuseColor(cosf(timeRight * 5) / 5,cosf(timeRight * 5) / 4,cosf(timeRight * 5) / 6, 1.0f);
+        m_Light2->SetDiffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
+        m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
     }
     else{
         m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f); 
+        m_Light2->SetDiffuseColor(0.3f, 0.2f, 0.3f, 1.0f);
+        m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
     }
-    m_Light->SetSpecularColor(1.0f, 1.0f, 0.0f, 1.0f);
+    m_Light->SetSpecularColor(0.0f, 1.0f, 0.0f, 1.0f);
     m_Light->SetDirection(-1.0f, -2.0f, 3.0f);
 
 
-    m_Light2->SetDiffuseColor(0.3f, 0.2f, 0.3f, 1.0f);
-    m_Light2->SetDirection(-5.0f, 7.0f, 1.0f);
+    
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
@@ -522,7 +543,8 @@ bool ApplicationClass::RenderSceneToTexture(float rotation, RenderTextureClass* 
    
 
     result = m_NormalMapShader->Render(m_Direct3D->GetDeviceContext(), m_Model[modelnum]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-        m_Model[modelnum]->GetTexture(0), m_Model[modelnum]->GetTexture(1), m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetSpecularColor(), m_Light2->GetDirection(), m_Light2->GetDiffuseColor());
+        m_Model[modelnum]->GetTexture(0), m_Model[modelnum]->GetTexture(1), m_Light->GetDirection(), m_Light->GetDiffuseColor(), 
+        m_Light->GetSpecularColor(), m_Light2->GetDirection(), m_Light2->GetDiffuseColor());
 
 	if (!result)
 	{

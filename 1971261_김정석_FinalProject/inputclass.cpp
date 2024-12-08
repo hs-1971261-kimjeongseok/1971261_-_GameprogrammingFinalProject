@@ -287,6 +287,16 @@ bool InputClass::IsNumThreePressed()
     return false;
 }
 
+bool InputClass::IsSpacebarPressed()
+{
+    if (m_keyboardState[DIK_SPACE] & 0x80)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 {
