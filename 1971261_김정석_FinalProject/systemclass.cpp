@@ -85,7 +85,7 @@ void SystemClass::Run()
 	MSG msg;
 	bool done, result;
 
-    int answer = rand() % 4; // 정답 결정
+    
 
 	// Initialize the message structure.
 	ZeroMemory(&msg, sizeof(MSG));
@@ -109,7 +109,7 @@ void SystemClass::Run()
 		else
 		{
 			// Otherwise do the frame processing.
-			result = Frame(answer);
+			result = Frame();
 			if(!result)
 			{
 				done = true;
@@ -121,7 +121,7 @@ void SystemClass::Run()
 }
 
 
-bool SystemClass::Frame(int answer)
+bool SystemClass::Frame()
 {
 	bool result;
 
@@ -134,7 +134,7 @@ bool SystemClass::Frame(int answer)
 	}
 
 	// Do the frame processing for the application class object.
-	result = m_Application->Frame(m_Input, answer);
+	result = m_Application->Frame(m_Input);
 	if(!result)
 	{
 		return false;
